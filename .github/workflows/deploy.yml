@@ -33,7 +33,7 @@ jobs:
     - name: Build and Push ARM64 Docker Image
       run: |
         docker buildx create --use
-        docker buildx build --platform linux/arm64 -t $IMAGE_NAME:latest . --push
+        docker buildx build --platform linux/arm64 -t ${{secrets.IMAGE_NAME}}:latest . --push
 
     # 5. 원격 서버로 배포
     - name: Deploy to Jetson Nano
@@ -43,7 +43,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          docker pull $IMAGE_NAME:latest
+          docker pull ${{secrets.IMAGE_NAME}}:latest
           docker ps -q -f "name=nextjs-app" && docker stop nextjs-app || true
           docker ps -q -f "name=nextjs-app" && docker rm nextjs-app || true
-          docker run -d --name nextjs-app -p 80:3000 $IMAGE_NAME:latest
+          docker run -d --name nextjs-app -p 80:3000 ${{secrets.IMAGE_NAME}}:latest
