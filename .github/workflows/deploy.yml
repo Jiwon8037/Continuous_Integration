@@ -1,0 +1,49 @@
+name: CI/CD for Next.js on Jetson Nano
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy for Jetson Nano
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: jiwon8037/next-docker  # Docker Hub 이미지 이름
+
+    steps:
+    # 1. GitHub 저장소 체크아웃
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Docker Buildx 설치
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # 3. Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 4. ARM 아키텍처용 Docker 이미지 빌드 및 푸시
+    - name: Build and Push ARM64 Docker Image
+      run: |
+        docker buildx create --use
+        docker buildx build --platform linux/arm64 -t $IMAGE_NAME:latest . --push
+
+    # 5. 원격 서버로 배포
+    - name: Deploy to Jetson Nano
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          docker pull $IMAGE_NAME:latest
+          docker stop nextjs-app || true
+          docker rm nextjs-app || true
+          docker run -d --name nextjs-app -p 80:3000 $IMAGE_NAME:latest
