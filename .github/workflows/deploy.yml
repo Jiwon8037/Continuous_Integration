@@ -44,6 +44,6 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           docker pull $IMAGE_NAME:latest
-          docker stop nextjs-app || true
-          docker rm nextjs-app || true
+          docker ps -q -f "name=nextjs-app" && docker stop nextjs-app || true
+          docker ps -q -f "name=nextjs-app" && docker rm nextjs-app || true
           docker run -d --name nextjs-app -p 80:3000 $IMAGE_NAME:latest
