@@ -10,9 +10,6 @@ jobs:
     name: Build and Deploy for Jetson Nano
     runs-on: ubuntu-latest
 
-    env:
-      IMAGE_NAME: jiwon8037/next-docker  # Docker Hub 이미지 이름
-
     steps:
     # 1. GitHub 저장소 체크아웃
     - name: Checkout code
