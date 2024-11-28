@@ -86,8 +86,7 @@ jobs:
 <li className="mb-2 text-blue-600 font-bold">
 ```
 <center>
-  <img src="public/before.jpg" width="259px" height="561px"/>
-  <img src="public/after.jpg" width="259px" height="561px"/>
+  <img src="public/md.JPG"/>
 </center>
 
 ---
